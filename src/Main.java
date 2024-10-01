@@ -6,6 +6,7 @@ public class Main {
     public static void main(String[] args) {
         Board board = new Board();
         Scanner scanner = new Scanner(System.in);
+        System.out.println(board.toString());
 
         board.update("start");
         System.out.println(board.toString());

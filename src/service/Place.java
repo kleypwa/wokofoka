@@ -1,36 +1,45 @@
 package service;
 
-public class Place {
-    Integer letter;
-    Integer number;
+public class Place implements Cloneable{
+    Integer x;
+    Integer y;
 
     public Place(Integer letter, Integer number) {
-        this.letter = letter;
-        this.number = number;
+        this.x = letter;
+        this.y = number;
     }
 
     public Place() {
     }
 
     public String toChessNotation() {
-        char column = (char) ('a' + this.letter);
-        int row = this.number + 1;
+        char column = (char) ('a' + this.x);
+        int row = this.y + 1;
         return "" + column + row;
     }
 
-    public Integer getLetter() {
-        return letter;
+    @Override
+    public Place clone() {
+        try {
+            return (Place) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning not supported", e);
+        }
     }
 
-    public void setLetter(Integer letter) {
-        this.letter = letter;
+    public Integer getX() {
+        return x;
     }
 
-    public Integer getNumber() {
-        return number;
+    public void setX(Integer x) {
+        this.x = x;
     }
 
-    public void setNumber(Integer number) {
-        this.number = number;
+    public Integer getY() {
+        return y;
+    }
+
+    public void setY(Integer y) {
+        this.y = y;
     }
 }

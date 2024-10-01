@@ -1,14 +1,14 @@
 package figure;
 
 import dto.MoveR;
-import service.Board;
-import service.Place;
+import service.*;
+
+import java.util.*;
 
 public class Pawn implements Figure {
     private String color;
     private Place place;
     private boolean isMoved = false;
-    private Double figureRating = 1.;
 
     public Pawn(String color, Place place) {
         this.color = color;
@@ -16,165 +16,137 @@ public class Pawn implements Figure {
     }
 
     @Override
-    public MoveR move(Board board) {
-        Double rating = -1.;
-        int x = place.getLetter();
-        int y = place.getNumber();
-        int newX = x, newY = y;
+    public List<MoveR> move(Board board) {
 
+        List<MoveR> moves = new ArrayList<>();
+
+        int x = place.getX();
+        int y = place.getY();
 
         if (color.equalsIgnoreCase("white")) {
-            if (isMoved) {
-                Figure onMove;
-                // left eating move
-                if (x != 0) {
-                    onMove = board.getBoard()[x - 1][y + 1];
-                    if (onMove.getFigureRating() > 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x - 1;
-                        newY = y + 1;
-                    }
-                }
+            Figure onMove;
+            MoveR move = null;
 
-                // right eating move
-                if (x != 7) {
-                    onMove = board.getBoard()[x + 1][y + 1];
-                    if (onMove.getFigureRating() > 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x + 1;
-                        newY = y + 1;
-                    }
-                }
+            // left eating move
+            if (x != 0) {
+                onMove = board.getBoard()[x - 1][y + 1];
+                if (onMove.getFigureRating() > 0 &&
+                        onMove.getColor().equalsIgnoreCase("black")) {
+                    Place newPlace = new Place(x - 1,y + 1);
+                    if (y + 1 == 7) {
+                        move = new MoveR(
+                                this,
+                                newPlace,
+                                ChessRating.MOVE_PAWN_TO_QUEEN
+                                        + ChessAnalyzeService.additionalRate(this, newPlace),
+                                ChessAction.PAWN_TO_QUEEN
+                        );
 
-                // move forward
-                if (y != 7) {
-                    onMove = board.getBoard()[x][y + 1];
-                    if (onMove.getFigureRating() == 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x;
-                        newY = y + 1;
-                    }
-                }
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                            moves.add(move);
+                    } else {
+                        move = new MoveR(
+                                this,
+                                newPlace,
+                                onMove.getFigureRating()
+                                        + ChessAnalyzeService.additionalRate(this, newPlace),
+                                ChessAction.PAWN_MOVE
+                        );
 
-            } else {
-                Figure onMove;
-                // left eating move
-                if (y != 0) {
-                    onMove = board.getBoard()[x + 1][y - 1];
-                    if (onMove.getFigureRating() > 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x + 1;
-                        newY = y - 1;
-                    }
-                }
-
-                // right eating move
-                if (y != 7) {
-                    onMove = board.getBoard()[x + 1][y + 1];
-                    if (onMove.getFigureRating() > 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x + 1;
-                        newY = y + 1;
-                    }
-                }
-
-                // move forward
-                if (x != 7) {
-                    onMove = board.getBoard()[x + 1][y];
-                    if (onMove instanceof Empty) {
-                        rating = onMove.getFigureRating();
-                        newX = x + 1;
-                        newY = y;
-                    }
-                }
-
-                // move forward on two cells
-                if (board.getBoard()[x + 1][y] instanceof Empty) {
-                    onMove = board.getBoard()[x + 2][y];
-                    if (onMove instanceof Empty) {
-                        rating = 1.;
-                        newX = x + 2;
-                        newY = y;
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                            moves.add(move);
                     }
                 }
             }
+
+            // right eating move
+            if (x != 7) {
+                onMove = board.getBoard()[x + 1][y + 1];
+                if (onMove.getFigureRating() > 0 &&
+                        onMove.getColor().equalsIgnoreCase("black")) {
+                    Place newPlace = new Place(x + 1,y + 1);
+                    if (y + 1 == 7) {
+                        move = new MoveR(
+                                this,
+                                newPlace,
+                                ChessRating.MOVE_PAWN_TO_QUEEN
+                                        + ChessAnalyzeService.additionalRate(this, newPlace),
+                                ChessAction.PAWN_TO_QUEEN
+                        );
+
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                            moves.add(move);
+                    } else {
+                        move = new MoveR(
+                                this,
+                                newPlace,
+                                onMove.getFigureRating()
+                                        + ChessAnalyzeService.additionalRate(this, newPlace),
+                                ChessAction.PAWN_MOVE
+                        );
+
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                            moves.add(move);
+                    }
+                }
+            }
+
+            // move forward
+            if (y != 7) {
+                onMove = board.getBoard()[x][y + 1];
+                if (onMove.getFigureRating() == 0) {
+                    Place newPlace = new Place(x,y + 1);
+                    if (y + 1 == 7) {
+                        move = new MoveR(
+                                this,
+                                newPlace,
+                                ChessRating.MOVE_PAWN_TO_QUEEN
+                                        + ChessAnalyzeService.additionalRate(this, newPlace),
+                                ChessAction.PAWN_TO_QUEEN
+                        );
+
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                            moves.add(move);
+                    } else {
+                        move = new MoveR(
+                                this,
+                                newPlace,
+                                ChessRating.MOVE_PAWN_FORWARD
+                                        + ChessAnalyzeService.additionalRate(this, newPlace),
+                                ChessAction.PAWN_MOVE
+                        );
+
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                            moves.add(move);
+                    }
+                }
+            }
+
+            // move forward on two cells
+            if (!isMoved) {
+                if (board.getBoard()[x][y + 1] instanceof Empty) {
+                    onMove = board.getBoard()[x][y + 2];
+                    if (onMove instanceof Empty) {
+                        Place newPlace = new Place(x, y + 2);
+                        move = new MoveR(
+                                this,
+                                newPlace,
+                                ChessRating.MOVE_PAWN_FORWARD_DUO
+                                        + ChessAnalyzeService.additionalRate(this, newPlace),
+                                ChessAction.PAWN_MOVE_DUO
+                        );
+                    }
+                }
+            }
+            if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                moves.add(move);
+
+
         } else {
-            if (isMoved) {
-                Figure onMove;
-                // left eating move
-                if (y != 0) {
-                    onMove = board.getBoard()[x - 1][y - 1];
-                    if (onMove.getFigureRating() > 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x - 1;
-                        newY = y - 1;
-                    }
-                }
 
-                // right eating move
-                if (y != 7) {
-                    onMove = board.getBoard()[x - 1][y + 1];
-                    if (onMove.getFigureRating() > 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x - 1;
-                        newY = y + 1;
-                    }
-                }
-
-                // move forward
-                if (x != 0) {
-                    onMove = board.getBoard()[x - 1][y];
-                    if (onMove.getFigureRating() == 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x;
-                        newY = y - 1;
-                    }
-                }
-
-            } else {
-                Figure onMove;
-                // left eating move
-                if (x != 0) {
-                    onMove = board.getBoard()[x - 1][y - 1];
-                    if (onMove.getFigureRating() > 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x - 1;
-                        newY = y - 1;
-                    }
-                }
-
-                // right eating move
-                if (x != 7) {
-                    onMove = board.getBoard()[x + 1][y - 1];
-                    if (onMove.getFigureRating() > 0 && onMove.getFigureRating() > rating) {
-                        rating = onMove.getFigureRating();
-                        newX = x + 1;
-                        newY = y - 1;
-                    }
-                }
-
-                // move forward
-                if (y != 0) {
-                    onMove = board.getBoard()[x][y - 1];
-                    if (onMove instanceof Empty) {
-                        rating = onMove.getFigureRating();
-                        newX = x;
-                        newY = y - 1;
-                    }
-                }
-
-                // move forward on two cells
-                if (board.getBoard()[x][y - 1] instanceof Empty) {
-                    onMove = board.getBoard()[x][y - 2];
-                    if (onMove instanceof Empty) {
-                        rating = 1.;
-                        newX = x;
-                        newY = y - 2;
-                    }
-                }
-            }
+            // Here will be functional for black, but now it doesn't need.
         }
-        return new MoveR(board.getBoard()[x][y], new Place(newX, newY), rating);
+        return moves;
     }
 
     @Override
@@ -188,8 +160,33 @@ public class Pawn implements Figure {
     }
 
     @Override
+    public void setAdditionalParameter(Boolean parameter) {
+        this.isMoved = true;
+    }
+
+    @Override
     public Double getFigureRating() {
-        return figureRating;
+        return ChessRating.FIGURE_PAWN;
+    }
+
+    @Override
+    public MoveR bestMove(Board board) {
+        return this.move(board).stream()
+                .max(Comparator.comparingDouble(MoveR::moveRating))
+                .orElseThrow(() -> new IllegalStateException("No valid moves found"));
+    }
+
+    @Override
+    public boolean isFigureCheckingKing(Board board) {
+        Integer x = place.getX();
+        Integer y = place.getY();
+        if (x != 0 && x != 7) {
+            if (board.getBoard()[x + 1][y + 1] instanceof King)
+                return true;
+            if (board.getBoard()[x - 1][y + 1] instanceof King)
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -197,7 +194,19 @@ public class Pawn implements Figure {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    @Override
+    public String toString() {
+        return "Pawn(" + this.place.toChessNotation() + ")";
+    }
+
+    @Override
+    public Pawn clone() {
+        try {
+            Pawn cloned = (Pawn) super.clone();
+            cloned.place = this.place != null ? this.place.clone() : null;
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning not supported", e);
+        }
     }
 }

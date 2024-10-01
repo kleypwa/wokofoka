@@ -2,7 +2,10 @@ package figure;
 
 import dto.MoveR;
 import service.Board;
+import service.ChessRating;
 import service.Place;
+
+import java.util.List;
 
 public class King implements Figure {
     private String color;
@@ -24,13 +27,28 @@ public class King implements Figure {
     }
 
     @Override
-    public Double getFigureRating() {
-        return 10.;
+    public void setAdditionalParameter(Boolean parameter) {
+
     }
 
     @Override
-    public MoveR move(Board board) {
+    public Double getFigureRating() {
+        return ChessRating.FIGURE_KING;
+    }
+
+    @Override
+    public MoveR bestMove(Board board) {
         return null;
+    }
+
+    @Override
+    public boolean isFigureCheckingKing(Board board) {
+        return false;
+    }
+
+    @Override
+    public List<MoveR> move(Board board) {
+        return List.of();
     }
 
     @Override
@@ -38,7 +56,15 @@ public class King implements Figure {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    @Override
+    public King clone() {
+        try {
+            King cloned = (King) super.clone();
+            cloned.place = this.place != null ? this.place.clone() : null;
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError("Cloning not supported", e);
+        }
     }
+
 }
