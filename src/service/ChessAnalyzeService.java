@@ -2,9 +2,11 @@ package service;
 
 import dto.MoveR;
 import figure.Figure;
+import figure.King;
 import figure.Pawn;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class ChessAnalyzeService {
@@ -60,10 +62,21 @@ public class ChessAnalyzeService {
         futureBoard.move(move.figure().getPlace().toChessNotation()
                 + move.newPlace().toChessNotation());
 
+
+        System.out.println("FUTURE DESK: " + move + futureBoard + "\n");
+
         boolean isChecked = Arrays.stream(futureBoard.getBoard())
                 .flatMap(Arrays::stream)
-                .filter(figure -> !Objects.equals(figure.getColor(), color))
+                .filter(figure -> figure.getColor().equals(color))
                 .anyMatch(figure -> figure.isFigureCheckingKing(futureBoard));
-        return isChecked;
+        System.out.println(move.figure().toString() + " " + isChecked);
+        return !isChecked;
+    }
+
+    public static boolean isKingHere(Board board, Integer x, Integer y, String colorForCheck){
+        if (x >= 0 && x <= 7 && y >= 0 && y <= 7)
+            return board.getBoard()[x][y] instanceof King
+                    && board.getBoard()[x][y].getColor().equalsIgnoreCase(colorForCheck);
+        return false;
     }
 }

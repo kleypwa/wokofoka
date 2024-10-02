@@ -9,15 +9,16 @@ public class Pawn implements Figure {
     private String color;
     private Place place;
     private boolean isMoved = false;
+    private String colorForCheck;
 
     public Pawn(String color, Place place) {
         this.color = color;
         this.place = place;
+        this.colorForCheck = this.color.equalsIgnoreCase("white") ? "black" : "white";
     }
 
     @Override
     public List<MoveR> move(Board board) {
-
         List<MoveR> moves = new ArrayList<>();
 
         int x = place.getX();
@@ -42,7 +43,7 @@ public class Pawn implements Figure {
                                 ChessAction.PAWN_TO_QUEEN
                         );
 
-                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, colorForCheck))
                             moves.add(move);
                     } else {
                         move = new MoveR(
@@ -53,7 +54,7 @@ public class Pawn implements Figure {
                                 ChessAction.PAWN_MOVE
                         );
 
-                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, colorForCheck))
                             moves.add(move);
                     }
                 }
@@ -74,7 +75,7 @@ public class Pawn implements Figure {
                                 ChessAction.PAWN_TO_QUEEN
                         );
 
-                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, colorForCheck))
                             moves.add(move);
                     } else {
                         move = new MoveR(
@@ -85,7 +86,7 @@ public class Pawn implements Figure {
                                 ChessAction.PAWN_MOVE
                         );
 
-                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, colorForCheck))
                             moves.add(move);
                     }
                 }
@@ -105,7 +106,7 @@ public class Pawn implements Figure {
                                 ChessAction.PAWN_TO_QUEEN
                         );
 
-                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, colorForCheck))
                             moves.add(move);
                     } else {
                         move = new MoveR(
@@ -116,7 +117,7 @@ public class Pawn implements Figure {
                                 ChessAction.PAWN_MOVE
                         );
 
-                        if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+                        if (ChessAnalyzeService.isThisMoveLegal(board, move, colorForCheck))
                             moves.add(move);
                     }
                 }
@@ -138,7 +139,7 @@ public class Pawn implements Figure {
                     }
                 }
             }
-            if (ChessAnalyzeService.isThisMoveLegal(board, move, color))
+            if (ChessAnalyzeService.isThisMoveLegal(board, move, colorForCheck))
                 moves.add(move);
 
 
@@ -173,17 +174,19 @@ public class Pawn implements Figure {
     public MoveR bestMove(Board board) {
         return this.move(board).stream()
                 .max(Comparator.comparingDouble(MoveR::moveRating))
-                .orElseThrow(() -> new IllegalStateException("No valid moves found"));
+                .orElse(null);
     }
 
     @Override
     public boolean isFigureCheckingKing(Board board) {
         Integer x = place.getX();
         Integer y = place.getY();
+
+
         if (x != 0 && x != 7) {
-            if (board.getBoard()[x + 1][y + 1] instanceof King)
+            if (ChessAnalyzeService.isKingHere(board, x + 1, y + 1, colorForCheck))
                 return true;
-            if (board.getBoard()[x - 1][y + 1] instanceof King)
+            if (ChessAnalyzeService.isKingHere(board, x - 1, y + 1, colorForCheck))
                 return true;
         }
         return false;

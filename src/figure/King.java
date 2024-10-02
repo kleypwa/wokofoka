@@ -2,18 +2,21 @@ package figure;
 
 import dto.MoveR;
 import service.Board;
+import service.ChessAnalyzeService;
 import service.ChessRating;
 import service.Place;
 
 import java.util.List;
 
 public class King implements Figure {
+    private final String colorForCheck;
     private String color;
     private Place place;
 
     public King(String color, Place place) {
         this.color = color;
         this.place = place;
+        this.colorForCheck = this.color.equalsIgnoreCase("white") ? "black" : "white";
     }
 
     @Override
@@ -43,6 +46,26 @@ public class King implements Figure {
 
     @Override
     public boolean isFigureCheckingKing(Board board) {
+        Integer x = place.getX();
+        Integer y = place.getY();
+
+        if (ChessAnalyzeService.isKingHere(board, x + 1, y + 1, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x + 1, y, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x + 1, y - 1, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x, y + 1, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x, y - 1, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x - 1, y + 1, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x - 1, y, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x - 1, y - 1, colorForCheck))
+            return true;
+
         return false;
     }
 
@@ -66,5 +89,4 @@ public class King implements Figure {
             throw new AssertionError("Cloning not supported", e);
         }
     }
-
 }

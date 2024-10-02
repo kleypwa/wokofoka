@@ -2,18 +2,21 @@ package figure;
 
 import dto.MoveR;
 import service.Board;
+import service.ChessAnalyzeService;
 import service.ChessRating;
 import service.Place;
 
 import java.util.List;
 
 public class Knight implements Figure {
+    private final String colorForCheck;
     private String color;
     private Place place;
 
     public Knight(String color, Place place) {
         this.color = color;
         this.place = place;
+        this.colorForCheck = this.color.equalsIgnoreCase("white") ? "black" : "white";
     }
 
     @Override
@@ -43,6 +46,33 @@ public class Knight implements Figure {
 
     @Override
     public boolean isFigureCheckingKing(Board board) {
+        Integer x = place.getX();
+        Integer y = place.getY();
+
+        //l
+        if (ChessAnalyzeService.isKingHere(board, x - 1, y + 2, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x - 2, y + 1, colorForCheck))
+            return true;
+
+        //r
+        if (ChessAnalyzeService.isKingHere(board, x + 1, y + 2, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x + 2, y + 1, colorForCheck))
+            return true;
+
+        //ld
+        if (ChessAnalyzeService.isKingHere(board, x - 1, y - 2, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x - 2, y - 1, colorForCheck))
+            return true;
+
+        //rd
+        if (ChessAnalyzeService.isKingHere(board, x + 1, y - 2, colorForCheck))
+            return true;
+        if (ChessAnalyzeService.isKingHere(board, x + 2, y - 1, colorForCheck))
+            return true;
+
         return false;
     }
 

@@ -15,14 +15,12 @@ public class Board implements Cloneable{
     public Board() {
         board = new Figure[8][8];
 
-        // Заполнение пустыми клетками
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 board[row][col] = new Empty(new Place(row, col));
             }
         }
 
-        // Расставляем белые фигуры
         board[0][0] = new Rook("white", new Place(0, 0));
         board[1][0] = new Knight("white", new Place(1, 0));
         board[2][0] = new Bishop("white", new Place(2, 0));
@@ -32,12 +30,10 @@ public class Board implements Cloneable{
         board[6][0] = new Knight("white", new Place(6, 0));
         board[7][0] = new Rook("white", new Place(7, 0));
 
-        // Белые пешки
         for (int col = 0; col < 8; col++) {
             board[col][1] = new Pawn("white", new Place(col, 1));
         }
 
-        // Расставляем черные фигуры
         board[0][7] = new Rook("black", new Place(0, 7));
         board[1][7] = new Knight("black", new Place(1, 7));
         board[2][7] = new Bishop("black", new Place(2, 7));
@@ -47,10 +43,11 @@ public class Board implements Cloneable{
         board[6][7] = new Knight("black", new Place(6, 7));
         board[7][7] = new Rook("black", new Place(7, 7));
 
-        // Черные пешки
         for (int col = 0; col < 8; col++) {
             board[col][6] = new Pawn("black", new Place(col, 6));
         }
+
+        board[0][4] = new Bishop("black", new Place(0, 4));
     }
 
     public Figure[][] getBoard() {
